@@ -6,12 +6,11 @@ import { toast } from "react-toastify";
 const FormContainer = styled.form`
   display: flex;
   align-items: flex-end;
-  gap: 10px;
+  gap: 12px;
   flex-wrap: wrap;
-  background-color: #fff;
-  padding: 20px;
-  box-shadow: 0px 0px 5px #ccc;
-  border-radius: 5px;
+  background-color: #f9fafb;
+  padding: 16px;
+  border-radius: 10px;
 `;
 
 const InputArea = styled.div`
@@ -19,24 +18,44 @@ const InputArea = styled.div`
   flex-direction: column;
 `;
 
-const Input = styled.input`
-  width: 120px;
-  padding: 0 10px;
-  border: 1px solid #bbb;
-  border-radius: 5px;
-  height: 40px;
+const Label = styled.label`
+  font-size: 12px;
+  color: #4b5563;
+  display: block;
+  margin-bottom: 4px; /* espaçamento entre o texto e o input */
 `;
 
-const Label = styled.label``;
+const Input = styled.input`
+  width: 150px;
+  padding: 0 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  height: 38px;
+  font-size: 13px;
+  background-color: #ffffff;
+
+  &:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.1);
+  }
+
+  @media (max-width: 600px) {
+    width: 100%;
+  }
+`;
 
 const Button = styled.button`
-  padding: 10px;
+  padding: 10px 20px;
   cursor: pointer;
-  border-radius: 5px;
+  border-radius: 999px;
   border: none;
-  background-color: #2c73d2;
+  background-color: #16a34a;
   color: white;
-  height: 42px;
+  height: 38px;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
 `;
 
 const Form = ({ getUsers, onEdit, setOnEdit }) => {
@@ -76,7 +95,7 @@ const Form = ({ getUsers, onEdit, setOnEdit }) => {
           data_nascimento: user.data_nascimento.value,
           turma: user.turma.value,
         });
-        toast.success("Usuário atualizado com sucesso!");
+        toast.success("Aluno atualizado com sucesso!");
       } else {
         await axios.post("http://localhost:3001", {
           nome: user.nome.value,
@@ -85,11 +104,11 @@ const Form = ({ getUsers, onEdit, setOnEdit }) => {
           data_nascimento: user.data_nascimento.value,
           turma: user.turma.value,
         });
-        toast.success("Usuário adicionado com sucesso!");
+        toast.success("Aluno adicionado com sucesso!");
       }
     } catch (err) {
       console.error(err);
-      toast.error("Erro ao salvar usuário.");
+      toast.error("Erro ao salvar aluno.");
     }
 
     user.nome.value = "";
@@ -108,18 +127,22 @@ const Form = ({ getUsers, onEdit, setOnEdit }) => {
         <Label>Nome</Label>
         <Input name="nome" />
       </InputArea>
+
       <InputArea>
         <Label>E-mail</Label>
         <Input name="email" type="email" />
       </InputArea>
+
       <InputArea>
         <Label>Telefone</Label>
         <Input name="fone" />
       </InputArea>
+
       <InputArea>
         <Label>Data de Nascimento</Label>
         <Input name="data_nascimento" type="date" />
       </InputArea>
+
       <InputArea>
         <Label>Turma</Label>
         <Input name="turma" />

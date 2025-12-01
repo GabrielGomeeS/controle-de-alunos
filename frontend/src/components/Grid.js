@@ -1,3 +1,4 @@
+// src/components/Grid.js
 import React from "react";
 import axios from "axios";
 import styled from "styled-components";
@@ -71,13 +72,21 @@ const ButtonExport = styled.button`
   gap: 5px;
 `;
 
-const Grid = ({ users, setUsers, setOnEdit }) => {
+const Grid = ({ users, setUsers, setOnEdit, usuarioLogado }) => {
   const [filtroTurma, setFiltroTurma] = React.useState("");
   const [filtroNome, setFiltroNome] = React.useState("");
   const [sortField, setSortField] = React.useState("nome");
   const [sortOrder, setSortOrder] = React.useState("asc");
 
-  const turmasDisponiveis = [...new Set(users.map((u) => u.turma).filter(Boolean))];
+  // Professor vê todos os usuários, aluno vê apenas a própria turma
+  const usuariosBase =
+    usuarioLogado?.tipo === "aluno"
+      ? users.filter((u) => u.turma === usuarioLogado.turma)
+      : users;
+
+  const turmasDisponiveis = [
+    ...new Set(usuariosBase.map((u) => u.turma).filter(Boolean)),
+  ];
 
   const handleEdit = (item) => setOnEdit(item);
 
@@ -100,7 +109,7 @@ const Grid = ({ users, setUsers, setOnEdit }) => {
     setSortOrder(order);
   };
 
-  const sortedUsers = [...users].sort((a, b) => {
+  const sortedUsers = [...usuariosBase].sort((a, b) => {
     if (!a[sortField]) return -1;
     if (!b[sortField]) return 1;
     if (sortOrder === "asc") return a[sortField] > b[sortField] ? 1 : -1;
@@ -131,8 +140,8 @@ const Grid = ({ users, setUsers, setOnEdit }) => {
     link.click();
   };
 
-  // Contagem de alunos por turma
-  const contagemPorTurma = users.reduce((acc, u) => {
+  // Contagem de alunos por turma (respeitando professor/aluno)
+  const contagemPorTurma = usuariosBase.reduce((acc, u) => {
     acc[u.turma] = (acc[u.turma] || 0) + 1;
     return acc;
   }, {});
@@ -187,8 +196,8 @@ const Grid = ({ users, setUsers, setOnEdit }) => {
                 )}
               </Th>
             ))}
-            <Th></Th>
-            <Th></Th>
+            {usuarioLogado?.tipo === "professor" && <Th></Th>}
+            {usuarioLogado?.tipo === "professor" && <Th></Th>}
           </Tr>
         </Thead>
 
@@ -201,12 +210,24 @@ const Grid = ({ users, setUsers, setOnEdit }) => {
                 {item.fone}
               </Td>
               <Td width="20%">{item.turma}</Td>
-              <Td alignCenter width="5%">
-                <FaEdit onClick={() => handleEdit(item)} style={{ cursor: "pointer" }} />
-              </Td>
-              <Td alignCenter width="5%">
-                <FaTrash onClick={() => handleDelete(item.id)} style={{ cursor: "pointer" }} />
-              </Td>
+
+              {usuarioLogado?.tipo === "professor" && (
+                <Td alignCenter width="5%">
+                  <FaEdit
+                    onClick={() => handleEdit(item)}
+                    style={{ cursor: "pointer" }}
+                  />
+                </Td>
+              )}
+
+              {usuarioLogado?.tipo === "professor" && (
+                <Td alignCenter width="5%">
+                  <FaTrash
+                    onClick={() => handleDelete(item.id)}
+                    style={{ cursor: "pointer" }}
+                  />
+                </Td>
+              )}
             </Tr>
           ))}
         </Tbody>
